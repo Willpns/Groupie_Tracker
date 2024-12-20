@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Search Results</h1>
+        <form action="/search" method="get">
+            <input type="text" name="q" placeholder="Search again..." value="{{.Query}}">
+            <button type="submit">Search</button>
+        </form>
+    </header>
+    <main>
+        {{if .Results}}
+        <ul>
+            {{range .Results}}
+            <li>
+                <h2>{{.Name}}</h2>
+                <p>Creation Year: {{.CreationDate}}</p>
+                <p>First Album: {{.FirstAlbum}}</p>
+                <p>Members: {{range .Members}}{{.}}, {{end}}</p>
+            </li>
+            {{end}}
+        </ul>
+        {{else}}
+        <p>No results found for "{{.Query}}".</p>
+        {{end}}
+    </main>
+</body>
+</html>
