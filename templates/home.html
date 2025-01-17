@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artists List</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Artists</h1>
+        <form action="/search" method="get">
+            <input type="text" name="q" placeholder="Search artists or members..." value="{{.Query}}">
+            <button type="submit">Search</button>
+        </form>
+    </header>
+
+    <main>
+        <div class="artists-grid">
+            {{if .Artists}}
+                {{range .Artists}}
+                <div class="artist-card">
+                    <h2><a href="/artist/{{.ID}}">{{.Name}}</a></h2>
+                    <p><strong>Creation Year:</strong> {{.CreationDate}}</p>
+                    <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
+                    <p><strong>Members:</strong> 
+                        {{if .Members}}
+                            {{join .Members ", "}}
+                        {{else}}
+                            No members available.
+                        {{end}}
+                    </p>
+                </div>
+                {{end}}
+            {{else}}
+                <p>No artists available to display.</p>
+            {{end}}
+        </div>
+
+        <nav class="pagination">
+            {{if gt .CurrentPage 1}}
+            <a href="/?page={{.PrevPage}}" class="prev">Previous</a>
+            {{end}}
+
+            {{range .Pages}}
+            <a href="/?page={{.}}" class="page-number {{if eq . $.CurrentPage}}active{{end}}">{{.}}</a>
+            {{end}}
+
+            {{if lt .CurrentPage .TotalPages}}
+            <a href="/?page={{.NextPage}}" class="next">Next</a>
+            {{end}}
+        </nav>
+    </main>
+</body>
+</html>
