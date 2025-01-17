@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -31,8 +32,11 @@ func main() {
 	// Routes
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/search", searchHandler)
+	http.HandleFunc("/artist/", artistHandler)
+	http.HandleFunc("/error", errorHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
+	// Lancer le serveur
 	fmt.Println("Server running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
@@ -57,18 +61,62 @@ func fetchArtists() error {
 	return nil
 }
 
-// homeHandler gère la page d'accueil
+// homeHandler affiche la liste paginée des artistes
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/home.html")
+	tmpl, err := template.ParseFiles("./templates/home.html")
 	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
+		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// Pagination
+	pageStr := r.URL.Query().Get("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	artistsPerPage := 5
+	startIndex := (page - 1) * artistsPerPage
+	endIndex := startIndex + artistsPerPage
+
+	if startIndex >= len(artists) {
+		startIndex = len(artists)
+	}
+	if endIndex > len(artists) {
+		endIndex = len(artists)
+	}
+
+	// Calcul des pages de pagination
+	totalPages := (len(artists) + artistsPerPage - 1) / artistsPerPage
+	var pages []int
+	for i := 1; i <= totalPages; i++ {
+		pages = append(pages, i)
+	}
+
+	// Calcul des pages précédente et suivante
+	prevPage := page - 1
+	if prevPage < 1 {
+		prevPage = 1
+	}
+	nextPage := page + 1
+	if nextPage > totalPages {
+		nextPage = totalPages
+	}
+
 	data := struct {
-		Artists []Artist
+		Artists     []Artist
+		CurrentPage int
+		TotalPages  int
+		Pages       []int
+		PrevPage    int
+		NextPage    int
 	}{
-		Artists: artists,
+		Artists:     artists[startIndex:endIndex],
+		CurrentPage: page,
+		TotalPages:  totalPages,
+		Pages:       pages,
+		PrevPage:    prevPage,
+		NextPage:    nextPage,
 	}
 
 	tmpl.Execute(w, data)
@@ -76,9 +124,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 // searchHandler gère la recherche d'artistes
 func searchHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/search.html")
+	tmpl, err := template.ParseFiles("./templates/search.html")
 	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
+		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -109,4 +157,33 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, data)
+}
+
+// artistHandler affiche les détails d'un artiste spécifique
+func artistHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("./templates/artist.html")
+	if err != nil {
+		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	idStr := strings.TrimPrefix(r.URL.Path, "/artist/")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id < 1 || id > len(artists) {
+		http.Redirect(w, r, "/error", http.StatusSeeOther)
+		return
+	}
+
+	artist := artists[id-1]
+	tmpl.Execute(w, artist)
+}
+
+// errorHandler affiche une page d'erreur
+func errorHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("./templates/error.html")
+	if err != nil {
+		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, nil)
 }

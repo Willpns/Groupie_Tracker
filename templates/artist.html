@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Name}} - Artist Details</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>{{.Name}}</h1>
+        <a href="/">Back to Artists List</a>
+    </header>
+
+    <main>
+        <section class="artist-details">
+            <h2>Details</h2>
+            <p><strong>Creation Year:</strong> {{.CreationDate}}</p>
+            <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
+            <p><strong>Members:</strong> 
+                {{range .Members}}
+                    {{.}}, 
+                {{end}}
+            </p>
+            <p><strong>Locations:</strong> {{.Locations}}</p>
+            <p><strong>Relations:</strong> {{.Relations}}</p>
+        </section>
+    </main>
+</body>
+</html>

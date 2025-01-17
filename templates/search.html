@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +10,13 @@
     <header>
         <h1>Search Results</h1>
         <form action="/search" method="get">
-            <input type="text" name="q" placeholder="Search again..." value="{{.Query}}">
+            <input type="text" name="q" placeholder="Search artists or members..." value="{{.Query}}">
             <button type="submit">Search</button>
         </form>
     </header>
+
     <main>
-        {{if .Results}}
+        <h2>Search results for "{{.Query}}":</h2>
         <ul>
             {{range .Results}}
             <li>
@@ -24,11 +25,10 @@
                 <p>First Album: {{.FirstAlbum}}</p>
                 <p>Members: {{range .Members}}{{.}}, {{end}}</p>
             </li>
+            {{else}}
+            <p>No results found.</p>
             {{end}}
         </ul>
-        {{else}}
-        <p>No results found for "{{.Query}}".</p>
-        {{end}}
     </main>
 </body>
 </html>
