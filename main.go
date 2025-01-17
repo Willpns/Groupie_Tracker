@@ -38,7 +38,6 @@ func main() {
 	// Déclarer les fonctions personnalisées
 	funcMap := template.FuncMap{
 		"join": join,
-		//"formatArtistName": formatArtistName, // Ajouter cette fonction
 	}
 
 	// Charger les templates avec les fonctions personnalisées
@@ -86,17 +85,56 @@ func fetchArtists() error {
 
 // homeHandler affiche la liste paginée des artistes
 func homeHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
-	// On ne gère plus la pagination, on affiche tous les artistes
-	data := struct {
-		Artists []Artist
-		Query   string
-	}{
-		Artists: artists, // Afficher tous les artistes, sans pagination
-		Query:   "",      // Valeur vide car il n'y a pas de recherche ici
+	pageStr := r.URL.Query().Get("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	artistsPerPage := 5
+	startIndex := (page - 1) * artistsPerPage
+	endIndex := startIndex + artistsPerPage
+
+	if startIndex >= len(artists) {
+		startIndex = len(artists)
+	}
+	if endIndex > len(artists) {
+		endIndex = len(artists)
 	}
 
-	// Exécuter le template avec les artistes récupérés
-	err := tmpl.ExecuteTemplate(w, "home.html", data)
+	totalPages := (len(artists) + artistsPerPage - 1) / artistsPerPage
+	var pages []int
+	for i := 1; i <= totalPages; i++ {
+		pages = append(pages, i)
+	}
+
+	prevPage := page - 1
+	if prevPage < 1 {
+		prevPage = 1
+	}
+	nextPage := page + 1
+	if nextPage > totalPages {
+		nextPage = totalPages
+	}
+
+	data := struct {
+		Artists     []Artist
+		CurrentPage int
+		TotalPages  int
+		Pages       []int
+		PrevPage    int
+		NextPage    int
+		Query       string // Ajout du champ Query
+	}{
+		Artists:     artists[startIndex:endIndex],
+		CurrentPage: page,
+		TotalPages:  totalPages,
+		Pages:       pages,
+		PrevPage:    prevPage,
+		NextPage:    nextPage,
+		Query:       "", // Valeur vide, car la recherche n'est pas applicable ici
+	}
+
+	err = tmpl.ExecuteTemplate(w, "home.html", data)
 	if err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
@@ -159,18 +197,3 @@ func errorHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Templat
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
 }
-
-// // Fonction pour générer l'URL de l'image à partir du nom de l'artiste
-// func (a *Artist) GetImageUrl() string {
-// 	// Remplacer les espaces par des underscores et mettre en minuscule
-// 	imageName := strings.ToLower(strings.ReplaceAll(a.Name, " ", "_"))
-// 	return fmt.Sprintf("https://groupietrackers.herokuapp.com/api/images/%s.jpeg", imageName)
-// }
-
-// // Fonction pour formater le nom de l'artiste en une URL valide
-// func formatArtistName(name string) string {
-// 	// Remplacer les espaces par des tirets et tout mettre en minuscule
-// 	name = strings.ToLower(name)
-// 	name = strings.ReplaceAll(name, " ", "")
-// 	return name
-// }
