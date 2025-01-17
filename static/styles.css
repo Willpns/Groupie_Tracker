@@ -1,0 +1,130 @@
+/* Mise en page globale */
+body {
+    font-family: 'Roboto', sans-serif;  /* Police moderne */
+    background-color:   #e0f7fa;  /* Changement de la couleur de fond (bleu clair très doux) */
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background-color: #0277bd;  /* Bleu foncé pour le header */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+form {
+    margin-top: 10px;
+}
+
+form input {
+    padding: 12px;
+    font-size: 16px;
+    margin-right: 10px;
+    width: 250px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    transition: border-color 0.3s ease;
+}
+
+form input:focus {
+    border-color: #0288d1;  /* Changement de couleur lors du focus */
+}
+
+form button {
+    padding: 12px 20px;
+    background-color: #0288d1;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #0277bd;  /* Changement de couleur au survol */
+}
+
+main {
+    padding: 40px 10%;
+}
+
+/* Liste des artistes */
+.artist-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+/* Carte d'artiste */
+.artist-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 30%;  /* Trois éléments par ligne */
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+    overflow: hidden;
+}
+
+.artist-card:hover {
+    transform: translateY(-10px);  /* Effet de translation */
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);  /* Ombre plus marquée */
+}
+
+.artist-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.artist-card:hover img {
+    transform: scale(1.05);  /* Effet de zoom sur l'image au survol */
+}
+
+.artist-card h3 {
+    font-size: 20px;
+    margin: 15px 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.artist-card p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.artist-card p strong {
+    font-weight: 600;
+}
+
+/* Responsivité */
+@media (max-width: 1024px) {
+    .artist-card {
+        width: 45%;  /* 2 éléments par ligne */
+    }
+}
+
+@media (max-width: 768px) {
+    .artist-card {
+        width: 100%;  /* 1 élément par ligne sur les écrans très petits */
+    }
+
+    main {
+        padding: 20px 5%;
+    }
+}

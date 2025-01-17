@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,30 +16,18 @@
     </header>
 
     <main>
-        <div class="artists-grid">
+        <h2>Liste des artistes</h2>
+        <div class="artist-list">
             {{range .Artists}}
             <div class="artist-card">
-                <h2><a href="/artist/{{.ID}}">{{.Name}}</a></h2>
-                <p><strong>Creation Year:</strong> {{.CreationDate}}</p>
-                <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
-                <p><strong>Members:</strong> {{range .Members}}{{.}}, {{end}}</p>
+                <img src="{{.Image}}" alt="{{.Name}}">
+                <h3>{{.Name}}</h3>
+                <p><strong>Année de création:</strong> {{.CreationDate}}</p>
+                <p><strong>Premier album:</strong> {{.FirstAlbum}}</p>
+                <p><strong>Membres:</strong> {{range .Members}}{{.}}, {{end}}</p>
             </div>
             {{end}}
         </div>
-
-        <nav class="pagination">
-            {{if gt .CurrentPage 1}}
-            <a href="/?page={{.PrevPage}}" class="prev">Previous</a>
-            {{end}}
-
-            {{range .Pages}}
-            <a href="/?page={{.}}" class="page-number">{{.}}</a>
-            {{end}}
-
-            {{if lt .CurrentPage .TotalPages}}
-            <a href="/?page={{.NextPage}}" class="next">Next</a>
-            {{end}}
-        </nav>
     </main>
 </body>
 </html>

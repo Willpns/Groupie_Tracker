@@ -17,9 +17,15 @@ type Artist struct {
 	FirstAlbum   string   `json:"firstAlbum"`
 	Locations    string   `json:"locations"`
 	Relations    string   `json:"relations"`
+	Image        string   `json:"image"`
 }
 
 var artists []Artist
+
+// Fonction pour joindre les éléments d'une liste avec un séparateur
+func join(slice []string, sep string) string {
+	return strings.Join(slice, sep)
+}
 
 func main() {
 	// Charger les données des artistes
@@ -29,11 +35,28 @@ func main() {
 		return
 	}
 
+	// Déclarer les fonctions personnalisées
+	funcMap := template.FuncMap{
+		"join": join,
+		//"formatArtistName": formatArtistName, // Ajouter cette fonction
+	}
+
+	// Charger les templates avec les fonctions personnalisées
+	templates := template.Must(template.New("").Funcs(funcMap).ParseGlob("./templates/*.html"))
+
 	// Routes
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/search", searchHandler)
-	http.HandleFunc("/artist/", artistHandler)
-	http.HandleFunc("/error", errorHandler)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		homeHandler(w, r, templates)
+	})
+	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
+		searchHandler(w, r, templates)
+	})
+	http.HandleFunc("/artist/", func(w http.ResponseWriter, r *http.Request) {
+		artistHandler(w, r, templates)
+	})
+	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
+		errorHandler(w, r, templates)
+	})
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	// Lancer le serveur
@@ -62,74 +85,25 @@ func fetchArtists() error {
 }
 
 // homeHandler affiche la liste paginée des artistes
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./templates/home.html")
-	if err != nil {
-		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Pagination
-	pageStr := r.URL.Query().Get("page")
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		page = 1
-	}
-	artistsPerPage := 5
-	startIndex := (page - 1) * artistsPerPage
-	endIndex := startIndex + artistsPerPage
-
-	if startIndex >= len(artists) {
-		startIndex = len(artists)
-	}
-	if endIndex > len(artists) {
-		endIndex = len(artists)
-	}
-
-	// Calcul des pages de pagination
-	totalPages := (len(artists) + artistsPerPage - 1) / artistsPerPage
-	var pages []int
-	for i := 1; i <= totalPages; i++ {
-		pages = append(pages, i)
-	}
-
-	// Calcul des pages précédente et suivante
-	prevPage := page - 1
-	if prevPage < 1 {
-		prevPage = 1
-	}
-	nextPage := page + 1
-	if nextPage > totalPages {
-		nextPage = totalPages
-	}
-
+func homeHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
+	// On ne gère plus la pagination, on affiche tous les artistes
 	data := struct {
-		Artists     []Artist
-		CurrentPage int
-		TotalPages  int
-		Pages       []int
-		PrevPage    int
-		NextPage    int
+		Artists []Artist
+		Query   string
 	}{
-		Artists:     artists[startIndex:endIndex],
-		CurrentPage: page,
-		TotalPages:  totalPages,
-		Pages:       pages,
-		PrevPage:    prevPage,
-		NextPage:    nextPage,
+		Artists: artists, // Afficher tous les artistes, sans pagination
+		Query:   "",      // Valeur vide car il n'y a pas de recherche ici
 	}
 
-	tmpl.Execute(w, data)
+	// Exécuter le template avec les artistes récupérés
+	err := tmpl.ExecuteTemplate(w, "home.html", data)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
 // searchHandler gère la recherche d'artistes
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./templates/search.html")
-	if err != nil {
-		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
+func searchHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
 	query := strings.ToLower(r.URL.Query().Get("q"))
 	var results []Artist
 
@@ -156,17 +130,14 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		Results: results,
 	}
 
-	tmpl.Execute(w, data)
+	err := tmpl.ExecuteTemplate(w, "search.html", data)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
 // artistHandler affiche les détails d'un artiste spécifique
-func artistHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./templates/artist.html")
-	if err != nil {
-		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
+func artistHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/artist/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 1 || id > len(artists) {
@@ -175,15 +146,31 @@ func artistHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	artist := artists[id-1]
-	tmpl.Execute(w, artist)
+	err = tmpl.ExecuteTemplate(w, "artist.html", artist)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
 // errorHandler affiche une page d'erreur
-func errorHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./templates/error.html")
+func errorHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
+	err := tmpl.ExecuteTemplate(w, "error.html", nil)
 	if err != nil {
-		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
-		return
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
-	tmpl.Execute(w, nil)
 }
+
+// // Fonction pour générer l'URL de l'image à partir du nom de l'artiste
+// func (a *Artist) GetImageUrl() string {
+// 	// Remplacer les espaces par des underscores et mettre en minuscule
+// 	imageName := strings.ToLower(strings.ReplaceAll(a.Name, " ", "_"))
+// 	return fmt.Sprintf("https://groupietrackers.herokuapp.com/api/images/%s.jpeg", imageName)
+// }
+
+// // Fonction pour formater le nom de l'artiste en une URL valide
+// func formatArtistName(name string) string {
+// 	// Remplacer les espaces par des tirets et tout mettre en minuscule
+// 	name = strings.ToLower(name)
+// 	name = strings.ReplaceAll(name, " ", "")
+// 	return name
+// }
