@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Groupie Tracker</title>
+</head>
+<body>
+    <h1>Groupie Tracker</h1>
+    <!-- Search Bar -->
+    <form action="/search" method="get">
+        <input type="text" name="q" placeholder="Search for an artist..." class="search-bar">
+        <button type="submit" class="search-button">Search</button>
+    </form>
+
+    <div class="artists">
+        {{ range . }}
+        <div class="artist">
+            <img src="{{ .Image }}" alt="{{ .Name }}">
+            <h2>{{ .Name }}</h2>
+            <p>Founded: {{ .CreationDate }}</p>
+            <a href="/artist?id={{ .ID }}">View Details</a>
+        </div>
+        {{ end }}
+    </div>
+</body>
+</html>

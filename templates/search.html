@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Search Results</title>
+</head>
+<body>
+    <div class="search-results">
+        <h1>Search Results</h1>
+        <ul>
+            {{ range . }}
+            <li>
+                <a href="/artist?id={{ .ID }}">{{ .Name }}</a>
+            </li>
+            {{ else }}
+            <p>No results found.</p>
+            {{ end }}
+        </ul>
+        <a href="/" class="back-to-home">Back to Home</a>
+    </div>
+</body>
+</html>
