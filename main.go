@@ -20,6 +20,7 @@ type Artist struct {
 	CreationDate int      `json:"creationDate"`
 	FirstAlbum   string   `json:"firstAlbum"`
 	RelationsURL string   `json:"relations"`
+	Relations    Relations
 }
 
 type Relations struct {
@@ -149,6 +150,15 @@ func main() {
 
 	if err := fetchData("artists", &artists); err != nil {
 		log.Fatalf("Failed to load artists: %v", err)
+	}
+
+	for i, artist := range artists {
+		relations, err := fetchRelations(artist.RelationsURL)
+		if err != nil {
+			log.Printf("Failed to load relations for artist %d: %v", artist.ID, err)
+			continue
+		}
+		artists[i].Relations = relations
 	}
 
 	log.Println("Successfully loaded all data from API.")

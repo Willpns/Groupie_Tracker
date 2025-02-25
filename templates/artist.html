@@ -15,5 +15,17 @@
         <li>{{ . }}</li>
         {{ end }}
     </ul>
+    <h2>Tour Locations & Dates</h2>
+    <ul>
+        {{ range $location, $dates := .Relations.DatesLocations }}
+        <li><strong>{{ $location }}</strong>:
+            <ul>
+                {{ range $dates }}
+                <li>{{ . }}</li>
+                {{ end }}
+            </ul>
+        </li>
+        {{ end }}
+    </ul>
 </body>
 </html>
