@@ -180,6 +180,21 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func accueilHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/accueil.html")
+	if err != nil {
+		http.Error(w, "Error loading accueil.html", http.StatusInternalServerError)
+		log.Printf("Error loading accueil.html: %v", err)
+		return
+	}
+
+	err = tmpl.Execute(w, artists) // Envoie les artistes pour les images de l'album
+	if err != nil {
+		http.Error(w, "Error rendering accueil.html", http.StatusInternalServerError)
+		log.Printf("Error rendering accueil.html: %v", err)
+	}
+}
+
 func main() {
 	log.Println("Loading data from API...")
 
@@ -200,9 +215,10 @@ func main() {
 
 	log.Println("Successfully loaded all data from API.")
 
-	// Set up routes and start the server
+	// Set up routes
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/", accueilHandler)  // Route pour l'accueil
+	http.HandleFunc("/home", homeHandler) // Page home
 	http.HandleFunc("/artist", artistHandler)
 	http.HandleFunc("/search", searchHandler)
 
