@@ -4,196 +4,208 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
+	"log"
 	"net/http"
-	"strconv"
+	"sort"
 	"strings"
 )
 
+const baseURL = "https://groupietrackers.herokuapp.com/api/"
+
 type Artist struct {
 	ID           int      `json:"id"`
+	Image        string   `json:"image"`
 	Name         string   `json:"name"`
 	Members      []string `json:"members"`
 	CreationDate int      `json:"creationDate"`
 	FirstAlbum   string   `json:"firstAlbum"`
-	Locations    string   `json:"locations"`
-	Relations    string   `json:"relations"`
-	Image        string   `json:"image"`
+	RelationsURL string   `json:"relations"`
+	Relations    Relations
+}
+
+type Relations struct {
+	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
 var artists []Artist
 
-// Fonction pour joindre les éléments d'une liste avec un séparateur
-func join(slice []string, sep string) string {
-	return strings.Join(slice, sep)
-}
-
-func main() {
-	// Charger les données des artistes
-	err := fetchArtists()
+func fetchData(endpoint string, result interface{}) error {
+	url := baseURL + endpoint
+	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Println("Error fetching artists:", err)
-		return
+		return fmt.Errorf("error fetching %s: %v", endpoint, err)
 	}
+	defer resp.Body.Close()
 
-	// Déclarer les fonctions personnalisées
-	funcMap := template.FuncMap{
-		"join": join,
-	}
-
-	// Charger les templates avec les fonctions personnalisées
-	templates := template.Must(template.New("").Funcs(funcMap).ParseGlob("./templates/*.html"))
-
-	// Routes
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		homeHandler(w, r, templates)
-	})
-	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
-		searchHandler(w, r, templates)
-	})
-	http.HandleFunc("/artist/", func(w http.ResponseWriter, r *http.Request) {
-		artistHandler(w, r, templates)
-	})
-	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
-		errorHandler(w, r, templates)
-	})
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-
-	// Lancer le serveur
-	fmt.Println("Server running on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
-}
-
-// fetchArtists récupère les données des artistes depuis l'API
-func fetchArtists() error {
-	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("API returned status: %d", response.StatusCode)
+		return fmt.Errorf("error reading response from %s: %v", endpoint, err)
 	}
 
-	err = json.NewDecoder(response.Body).Decode(&artists)
-	if err != nil {
-		return err
+	if err := json.Unmarshal(body, &result); err != nil {
+		return fmt.Errorf("error parsing JSON from %s: %v", endpoint, err)
 	}
 
+	log.Printf("Successfully fetched %s", endpoint)
 	return nil
 }
 
-// homeHandler affiche la liste paginée des artistes
-func homeHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
-	pageStr := r.URL.Query().Get("page")
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		page = 1
-	}
-	artistsPerPage := 5
-	startIndex := (page - 1) * artistsPerPage
-	endIndex := startIndex + artistsPerPage
-
-	if startIndex >= len(artists) {
-		startIndex = len(artists)
-	}
-	if endIndex > len(artists) {
-		endIndex = len(artists)
-	}
-
-	totalPages := (len(artists) + artistsPerPage - 1) / artistsPerPage
-	var pages []int
-	for i := 1; i <= totalPages; i++ {
-		pages = append(pages, i)
-	}
-
-	prevPage := page - 1
-	if prevPage < 1 {
-		prevPage = 1
-	}
-	nextPage := page + 1
-	if nextPage > totalPages {
-		nextPage = totalPages
-	}
-
-	data := struct {
-		Artists     []Artist
-		CurrentPage int
-		TotalPages  int
-		Pages       []int
-		PrevPage    int
-		NextPage    int
-		Query       string // Ajout du champ Query
-	}{
-		Artists:     artists[startIndex:endIndex],
-		CurrentPage: page,
-		TotalPages:  totalPages,
-		Pages:       pages,
-		PrevPage:    prevPage,
-		NextPage:    nextPage,
-		Query:       "", // Valeur vide, car la recherche n'est pas applicable ici
-	}
-
-	err = tmpl.ExecuteTemplate(w, "home.html", data)
+func fetchRelations(url string) (Relations, error) {
+	resp, err := http.Get(url)
 	if err != nil {
-		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+		return Relations{}, fmt.Errorf("error fetching relations: %v", err)
 	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return Relations{}, fmt.Errorf("error reading relations response: %v", err)
+	}
+
+	var relations Relations
+	if err := json.Unmarshal(body, &relations); err != nil {
+		return Relations{}, fmt.Errorf("error parsing relations JSON: %v", err)
+	}
+
+	return relations, nil
 }
 
-// searchHandler gère la recherche d'artistes
-func searchHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
-	query := strings.ToLower(r.URL.Query().Get("q"))
-	var results []Artist
-
-	if query != "" {
-		for _, artist := range artists {
-			if strings.Contains(strings.ToLower(artist.Name), query) {
-				results = append(results, artist)
-			} else {
-				for _, member := range artist.Members {
-					if strings.Contains(strings.ToLower(member), query) {
-						results = append(results, artist)
-						break
-					}
-				}
-			}
+// Fonction pour trier les artistes
+func sortArtists(sortBy, order string) {
+	switch sortBy {
+	case "name":
+		if order == "asc" {
+			sort.Slice(artists, func(i, j int) bool {
+				return strings.ToLower(artists[i].Name) < strings.ToLower(artists[j].Name)
+			})
+		} else if order == "desc" {
+			sort.Slice(artists, func(i, j int) bool {
+				return strings.ToLower(artists[i].Name) > strings.ToLower(artists[j].Name)
+			})
+		}
+	case "creationDate":
+		if order == "asc" {
+			sort.Slice(artists, func(i, j int) bool {
+				return artists[i].CreationDate < artists[j].CreationDate
+			})
+		} else if order == "desc" {
+			sort.Slice(artists, func(i, j int) bool {
+				return artists[i].CreationDate > artists[j].CreationDate
+			})
 		}
 	}
-
-	data := struct {
-		Query   string
-		Results []Artist
-	}{
-		Query:   query,
-		Results: results,
-	}
-
-	err := tmpl.ExecuteTemplate(w, "search.html", data)
-	if err != nil {
-		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
-	}
 }
 
-// artistHandler affiche les détails d'un artiste spécifique
-func artistHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/artist/")
-	id, err := strconv.Atoi(idStr)
-	if err != nil || id < 1 || id > len(artists) {
-		http.Redirect(w, r, "/error", http.StatusSeeOther)
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	sortBy := r.URL.Query().Get("sortBy")
+	order := r.URL.Query().Get("order")
+
+	// Sort the artists if sorting parameters are provided
+	if sortBy != "" && order != "" {
+		sortArtists(sortBy, order)
+	}
+
+	tmpl, err := template.ParseFiles("templates/home.html")
+	if err != nil {
+		http.Error(w, "Error loading template", http.StatusInternalServerError)
+		log.Printf("Error loading home.html: %v", err)
 		return
 	}
 
-	artist := artists[id-1]
-	err = tmpl.ExecuteTemplate(w, "artist.html", artist)
+	err = tmpl.Execute(w, artists)
 	if err != nil {
-		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+		log.Printf("Error rendering home.html: %v", err)
 	}
 }
 
-// errorHandler affiche une page d'erreur
-func errorHandler(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
-	err := tmpl.ExecuteTemplate(w, "error.html", nil)
-	if err != nil {
-		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+func artistHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		http.Error(w, "Artist ID is missing", http.StatusBadRequest)
+		return
 	}
+
+	var selectedArtist Artist
+	found := false
+	for _, artist := range artists {
+		if fmt.Sprintf("%d", artist.ID) == id {
+			selectedArtist = artist
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		http.Error(w, "Artist not found", http.StatusNotFound)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("templates/artist.html")
+	if err != nil {
+		http.Error(w, "Error loading template", http.StatusInternalServerError)
+		log.Printf("Error loading artist.html: %v", err)
+		return
+	}
+
+	err = tmpl.Execute(w, selectedArtist)
+	if err != nil {
+		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+		log.Printf("Error rendering artist.html: %v", err)
+	}
+}
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+	var results []Artist
+
+	for _, artist := range artists {
+		if strings.Contains(strings.ToLower(artist.Name), strings.ToLower(query)) {
+			results = append(results, artist)
+		}
+	}
+
+	tmpl, err := template.ParseFiles("templates/search.html")
+	if err != nil {
+		http.Error(w, "Error loading template", http.StatusInternalServerError)
+		log.Printf("Error loading search.html: %v", err)
+		return
+	}
+
+	err = tmpl.Execute(w, results)
+	if err != nil {
+		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+		log.Printf("Error rendering search.html: %v", err)
+	}
+}
+
+func main() {
+	log.Println("Loading data from API...")
+
+	// Fetch artists data
+	if err := fetchData("artists", &artists); err != nil {
+		log.Fatalf("Failed to load artists: %v", err)
+	}
+
+	// Fetch relations data for each artist
+	for i, artist := range artists {
+		relations, err := fetchRelations(artist.RelationsURL)
+		if err != nil {
+			log.Printf("Failed to load relations for artist %d: %v", artist.ID, err)
+			continue
+		}
+		artists[i].Relations = relations
+	}
+
+	log.Println("Successfully loaded all data from API.")
+
+	// Set up routes and start the server
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/artist", artistHandler)
+	http.HandleFunc("/search", searchHandler)
+
+	log.Println("Starting server on :8080...")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

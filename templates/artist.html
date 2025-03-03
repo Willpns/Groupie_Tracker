@@ -1,44 +1,40 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Name}} - Détails</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>{{ .Name }}</title>
+    <link rel="stylesheet" href="/static/artist.css">
 </head>
 <body>
-    <header>
-        <h1>{{.Name}}</h1>
-        <a href="/">Retour à l'accueil</a>
-    </header>
 
-    <main>
-        <section class="artist-details">
-            <h2>Details</h2>
-            <p><strong>Creation Year:</strong> {{.CreationDate}}</p>
-            <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
-            <p><strong>Members:</strong> 
-                {{if .Members}}
-                    {{join .Members ", "}}
-                {{else}}
-                    No members available.
-                {{end}}
-            </p>
-            <p><strong>Locations:</strong> 
-                {{if .Locations}}
-                    {{.Locations}}
-                {{else}}
-                    No locations available.
-                {{end}}
-            </p>
-            <p><strong>Relations:</strong> 
-                {{if .Relations}}
-                    {{.Relations}}
-                {{else}}
-                    No relations available.
-                {{end}}
-            </p>
-        </section>
-    </main>
+    <div class="container">
+        <h1>{{ .Name }}</h1>
+        <img src="{{ .Image }}" alt="{{ .Name }}">
+        <p><strong>Founded:</strong> {{ .CreationDate }}</p>
+        <p><strong>First Album:</strong> {{ .FirstAlbum }}</p>
+
+        <h2>Members</h2>
+        <ul class="members-list">
+            {{ range .Members }}
+            <li>{{ . }}</li>
+            {{ end }}
+        </ul>
+
+        <h2>Tour Locations & Dates</h2>
+        <div class="tour-container">
+            {{ range $location, $dates := .Relations.DatesLocations }}
+            <div class="tour-card">
+                <strong>{{ $location }}</strong>
+                <ul>
+                    {{ range $dates }}
+                    <li>{{ . }}</li>
+                    {{ end }}
+                </ul>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+
 </body>
 </html>

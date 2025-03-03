@@ -1,33 +1,54 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artists List</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Groupie Tracker</title>
 </head>
 <body>
-    <header>
-        <h1>Artists</h1>
-        <form action="/search" method="get">
-            <input type="text" name="q" placeholder="Search artists or members..." value="{{.Query}}">
-            <button type="submit">Search</button>
-        </form>
-    </header>
+    <h1>Groupie Tracker</h1>
 
-    <main>
-        <h2>Liste des artistes</h2>
-        <div class="artist-list">
-            {{range .Artists}}
-            <div class="artist-card">
-                <img src="{{.Image}}" alt="{{.Name}}">
-                <h3>{{.Name}}</h3>
-                <p><strong>Année de création:</strong> {{.CreationDate}}</p>
-                <p><strong>Premier album:</strong> {{.FirstAlbum}}</p>
-                <p><strong>Membres:</strong> {{range .Members}}{{.}}, {{end}}</p>
-            </div>
-            {{end}}
+    <!-- Search Bar -->
+    <form action="/search" method="get">
+        <input type="text" name="q" placeholder="Search for an artist..." class="search-bar">
+        <button type="submit" class="search-button">Search</button>
+    </form>
+
+    <!-- Sort Button and Menu -->
+    <div class="sort-container">
+        <button class="sort-button">Sort</button>
+        <div class="sort-menu">
+            <a href="/?sortBy=name&order=asc">Alphabetically (A-Z)</a>
+            <a href="/?sortBy=name&order=desc">Alphabetically (Z-A)</a>
+            <a href="/?sortBy=creationDate&order=asc">By Date (Newest First)</a>
+            <a href="/?sortBy=creationDate&order=desc">By Date (Oldest First)</a>
         </div>
-    </main>
+    </div>
+
+    <div class="artists">
+        {{ range . }}
+        <div class="artist">
+            <img src="{{ .Image }}" alt="{{ .Name }}">
+            <h2>{{ .Name }}</h2>
+            <p>Founded: {{ .CreationDate }}</p>
+            <a href="/artist?id={{ .ID }}">View Details</a>
+        </div>
+        {{ end }}
+    </div>
+
+    <script>
+        // Le script qui gère l'affichage du menu au clic sur le bouton "Sort"
+        document.querySelector('.sort-button').addEventListener('click', function() {
+            const menu = document.querySelector('.sort-menu');
+            menu.classList.toggle('visible'); // Ajoute ou enlève la classe 'visible'
+        });
+
+        // Ferme le menu si on clique ailleurs sur la page
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.sort-container')) {
+                document.querySelector('.sort-menu').classList.remove('visible');
+            }
+        });
+    </script>
 </body>
 </html>

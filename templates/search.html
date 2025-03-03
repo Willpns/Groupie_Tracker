@@ -1,34 +1,30 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
     <title>Search Results</title>
-    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <header>
+    <!-- Search Results Title Section -->
+    <div class="search-title-container">
         <h1>Search Results</h1>
-        <form action="/search" method="get">
-            <input type="text" name="q" placeholder="Search artists or members..." value="{{.Query}}">
-            <button type="submit">Search</button>
-        </form>
-    </header>
+    </div>
 
-    <main>
-        <h2>Search results for "{{.Query}}":</h2>
-        <ul>
-            {{range .Results}}
-            <li>
-                <h2>{{.Name}}</h2>
-                <p>Creation Year: {{.CreationDate}}</p>
-                <p>First Album: {{.FirstAlbum}}</p>
-                <p>Members: {{range .Members}}{{.}}, {{end}}</p>
-            </li>
-            {{else}}
-            <p>No results found.</p>
-            {{end}}
-        </ul>
-    </main>
+    <!-- Search Results Container -->
+    <div class="artists">
+        {{ range . }}
+        <div class="artist">
+            <img src="{{ .Image }}" alt="{{ .Name }}">
+            <h2>{{ .Name }}</h2>
+            <p>Founded: {{ .CreationDate }}</p>
+            <a href="/artist?id={{ .ID }}">View Details</a>
+        </div>
+        {{ else }}
+        <p>No results found.</p>
+        {{ end }}
+    </div>
+
+    <!-- Back to Home Button -->
+    <a href="/" class="back-to-home">Back to Home</a>
 </body>
 </html>
