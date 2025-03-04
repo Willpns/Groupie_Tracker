@@ -1,8 +1,7 @@
-/* Reset et centrage général */
 body {
     font-family: Arial, sans-serif;
-    background-color: #222; /* Fond sombre pour le body */
-    color: #f9f9f9; /* Texte clair */
+    background-color: #222; 
+    color: #f9f9f9; 
     text-align: center;
     margin: 0;
     padding: 20px;
@@ -11,15 +10,15 @@ body {
     align-items: center;
 }
 
-/* Titre principal */
+
 h1 {
     font-family: 'Dancing Script', cursive;
-    font-size: 3.5em; /* Taille du titre */
-    color: #f9f9f9; /* Couleur du texte du titre */
+    font-size: 3.5em; 
+    color: #f9f9f9; 
     margin-bottom: 10px;
 }
 
-/* Image */
+
 img {
     max-width: 300px;
     height: auto;
@@ -28,35 +27,32 @@ img {
     margin: 20px 0;
 }
 
-/* Paragraphes */
+
 p {
     font-size: 1.2em;
     margin: 5px 0;
-    color: #bbb; /* Texte gris clair pour les paragraphes */
+    color: #bbb;
 }
 
-/* Sous-titres */
+
 h2 {
     font-size: 2em;
     margin-top: 20px;
-    color: #f9f9f9; /* Couleur claire pour les sous-titres */
+    color: #f9f9f9;
 }
 
-/* Listes générales */
 ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-/* Centrage des membres */
 .members-list {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* Conteneur des lieux de tournée */
 .tour-container {
     display: flex;
     flex-wrap: wrap;
@@ -66,20 +62,19 @@ ul {
     margin: auto;
 }
 
-/* Style des cartes de tournée */
 .tour-card {
-    background: #333; /* Fond sombre pour les cartes */
+    background: #333;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
-    flex: 1 1 250px; /* Flexibilité pour occuper l'espace */
+    flex: 1 1 250px;
     min-width: 250px;
     margin-bottom: 15px;
     box-sizing: border-box;
 }
 
-/* Styles spécifiques pour les dates dans les cartes */
+
 .tour-card ul {
     list-style-type: none;
     padding: 0;
@@ -89,5 +84,21 @@ ul {
 .tour-card li {
     font-size: 1em;
     padding: 5px 0;
-    color: #bbb; /* Texte des dates en gris clair */
+    color: #bbb;
 }
+
+#map {
+    height: 400px;
+    width: 80%;
+    max-width: 800px; 
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: block;
+}
+
+.leaflet-container {
+    max-width: 900px !important;
+    margin: 0 auto;
+}
+

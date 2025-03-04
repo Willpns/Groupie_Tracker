@@ -8,13 +8,11 @@
 <body>
     <h1>Groupie Tracker</h1>
 
-    <!-- Search Bar -->
     <form action="/search" method="get">
         <input type="text" name="q" placeholder="Search for an artist..." class="search-bar">
         <button type="submit" class="search-button">Search</button>
     </form>
 
-    <!-- Sort Button and Menu -->
     <div class="sort-container">
         <button class="sort-button">Sort</button>
         <div class="sort-menu">
@@ -37,13 +35,11 @@
     </div>
 
     <script>
-        // Le script qui gère l'affichage du menu au clic sur le bouton "Sort"
         document.querySelector('.sort-button').addEventListener('click', function() {
             const menu = document.querySelector('.sort-menu');
-            menu.classList.toggle('visible'); // Ajoute ou enlève la classe 'visible'
+            menu.classList.toggle('visible');
         });
 
-        // Ferme le menu si on clique ailleurs sur la page
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.sort-container')) {
                 document.querySelector('.sort-menu').classList.remove('visible');

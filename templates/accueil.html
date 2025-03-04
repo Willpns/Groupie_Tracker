@@ -13,7 +13,6 @@
 
     <div class="carousel-container">
         <div class="carousel">
-            <!-- Images d'artistes, insérées dynamiquement avec Go -->
             {{range .}}
             <img src="{{.Image}}" alt="{{.Name}}">
             {{end}}
@@ -27,31 +26,25 @@
             const carousel = document.querySelector('.carousel');
             const images = carousel.querySelectorAll('img');
             
-            // Clone les premières images pour permettre l'effet infini
             images.forEach(image => {
                 const clone = image.cloneNode(true);
                 carousel.appendChild(clone);
             });
 
-            // Initialisation des variables nécessaires pour l'animation
             let offset = 0;
-            const speed = 1; // Contrôle la vitesse du défilement
-            const width = carousel.scrollWidth / 2; // Largeur totale après duplication des images
+            const speed = 1;
+            const width = carousel.scrollWidth / 2; 
 
-            // Fonction pour animer le carrousel de manière continue
             function animateCarousel() {
                 offset += speed;
                 
-                // Si la position dépasse la largeur des images (donc arrive à la fin), la remettre à 0 pour un effet continu
                 if (offset >= width) {
                     offset = 0;
                 }
 
-                // Déplace le carrousel en fonction de l'offset
                 carousel.style.transform = `translateX(-${offset}px)`;
             }
 
-            // Exécuter l'animation toutes les 10ms
             setInterval(animateCarousel, 10);
         }
     </script>

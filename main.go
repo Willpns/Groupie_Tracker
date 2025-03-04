@@ -28,7 +28,23 @@ type Relations struct {
 	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
+type Concert struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	City      string  `json:"city"`
+	Date      string  `json:"date"`
+}
+
 var artists []Artist
+
+func getConcertsHandler(w http.ResponseWriter, r *http.Request) {
+	concerts := []Concert{
+		{48.8566, 2.3522, "Paris", "2025-07-10"},
+		{51.5074, -0.1278, "Londres", "2025-07-15"},
+		{40.7128, -74.0060, "New York", "2025-07-20"},
+	}
+	json.NewEncoder(w).Encode(concerts)
+}
 
 func fetchData(endpoint string, result interface{}) error {
 	url := baseURL + endpoint
@@ -71,7 +87,6 @@ func fetchRelations(url string) (Relations, error) {
 	return relations, nil
 }
 
-// Fonction pour trier les artistes
 func sortArtists(sortBy, order string) {
 	switch sortBy {
 	case "name":
@@ -101,7 +116,6 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	sortBy := r.URL.Query().Get("sortBy")
 	order := r.URL.Query().Get("order")
 
-	// Sort the artists if sorting parameters are provided
 	if sortBy != "" && order != "" {
 		sortArtists(sortBy, order)
 	}
@@ -188,7 +202,7 @@ func accueilHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, artists) // Envoie les artistes pour les images de l'album
+	err = tmpl.Execute(w, artists)
 	if err != nil {
 		http.Error(w, "Error rendering accueil.html", http.StatusInternalServerError)
 		log.Printf("Error rendering accueil.html: %v", err)
@@ -198,12 +212,10 @@ func accueilHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	log.Println("Loading data from API...")
 
-	// Fetch artists data
 	if err := fetchData("artists", &artists); err != nil {
 		log.Fatalf("Failed to load artists: %v", err)
 	}
 
-	// Fetch relations data for each artist
 	for i, artist := range artists {
 		relations, err := fetchRelations(artist.RelationsURL)
 		if err != nil {
@@ -215,10 +227,9 @@ func main() {
 
 	log.Println("Successfully loaded all data from API.")
 
-	// Set up routes
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/", accueilHandler)  // Route pour l'accueil
-	http.HandleFunc("/home", homeHandler) // Page home
+	http.HandleFunc("/", accueilHandler)
+	http.HandleFunc("/home", homeHandler)
 	http.HandleFunc("/artist", artistHandler)
 	http.HandleFunc("/search", searchHandler)
 
