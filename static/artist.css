@@ -1,6 +1,10 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #222; 
+    background-image:url("fond5.jpg"); 
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: #f9f9f9; 
     text-align: center;
     margin: 0;
@@ -63,10 +67,10 @@ ul {
 }
 
 .tour-card {
-    background: #333;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
     padding: 10px;
     border-radius: 8px;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
     flex: 1 1 250px;
     min-width: 250px;

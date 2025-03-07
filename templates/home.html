@@ -8,21 +8,61 @@
 <body>
     <h1>Groupie Tracker</h1>
 
+    <!-- Existing search form -->
     <form action="/search" method="get">
         <input type="text" name="q" placeholder="Search for an artist..." class="search-bar">
         <button type="submit" class="search-button">Search</button>
     </form>
 
+    <!-- Sorting menu -->
     <div class="sort-container">
         <button class="sort-button">Sort</button>
         <div class="sort-menu">
-            <a href="/?sortBy=name&order=asc">Alphabetically (A-Z)</a>
-            <a href="/?sortBy=name&order=desc">Alphabetically (Z-A)</a>
-            <a href="/?sortBy=creationDate&order=asc">By Date (Newest First)</a>
-            <a href="/?sortBy=creationDate&order=desc">By Date (Oldest First)</a>
+            <a href="/home?sortBy=name&order=asc">Alphabetically (A-Z)</a>
+            <a href="/home?sortBy=name&order=desc">Alphabetically (Z-A)</a>
+            <a href="/home?sortBy=creationDate&order=desc">By Date (Newest First)</a>
+            <a href="/home?sortBy=creationDate&order=asc">By Date (Oldest First)</a>
         </div>
     </div>
 
+    <!-- NEW: Filter form -->
+    <form id="filter-form">
+        <h2>Filters</h2>
+
+        <!-- Range filter for artist CreationDate -->
+        <label>Creation Year (min):</label>
+        <input type="number" name="creationMin" placeholder="e.g. 1960">
+        <label>Creation Year (max):</label>
+        <input type="number" name="creationMax" placeholder="e.g. 2025">
+        <br><br>
+
+        <!-- Range filter for FirstAlbum year -->
+        <label>First Album (from year):</label>
+        <input type="number" name="albumMin" placeholder="e.g. 1960">
+        <label>First Album (to year):</label>
+        <input type="number" name="albumMax" placeholder="e.g. 2025">
+        <br><br>
+
+        <!-- Checkbox filter for number of members -->
+        <label>Number of Members:</label><br>
+        <input type="checkbox" name="membersCount" value="1">1<br>
+        <input type="checkbox" name="membersCount" value="2">2<br>
+        <input type="checkbox" name="membersCount" value="3">3<br>
+        <input type="checkbox" name="membersCount" value="4">4<br>
+        <input type="checkbox" name="membersCount" value="5">5<br>
+        <br>
+
+        <!-- Checkbox filter for Locations (as an example) -->
+        <label>Locations of Concerts:</label><br>
+        <input type="checkbox" name="locations" value="london-uk">London (UK)<br>
+        <input type="checkbox" name="locations" value="lausanne-switzerland">Lausanne (Switzerland)<br>
+        <input type="checkbox" name="locations" value="lyon-france">Lyon (France)<br>
+        <br>
+
+        <button type="submit">Apply Filters</button>
+    </form>
+
+    <!-- Main artists container (initially from server-side rendering) -->
     <div class="artists">
         {{ range . }}
         <div class="artist">
@@ -34,6 +74,7 @@
         {{ end }}
     </div>
 
+    <!-- Show/hide the sort-menu -->
     <script>
         document.querySelector('.sort-button').addEventListener('click', function() {
             const menu = document.querySelector('.sort-menu');
@@ -46,5 +87,8 @@
             }
         });
     </script>
+
+    <!-- Include your main script -->
+    <script src="/static/script.js"></script>
 </body>
 </html>
