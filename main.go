@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -87,6 +88,8 @@ func fetchRelations(url string) (Relations, error) {
 	return relations, nil
 }
 
+// sortArtists modifies the global artists slice in place.
+// If you want to sort a filtered slice, just pass that slice instead.
 func sortArtists(sortBy, order string) {
 	switch sortBy {
 	case "name":
@@ -112,17 +115,119 @@ func sortArtists(sortBy, order string) {
 	}
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	// Grab sort parameters from the URL (e.g., /home?sortBy=name&order=asc)
-	sortBy := r.URL.Query().Get("sortBy")
-	order := r.URL.Query().Get("order")
+// filterArtists returns a NEW slice filtered by the query params
+func filterArtists(original []Artist, r *http.Request) []Artist {
+	// Parse range filters
+	creationMinStr := r.URL.Query().Get("creationMin")
+	creationMaxStr := r.URL.Query().Get("creationMax")
+	albumMinStr := r.URL.Query().Get("albumMin")
+	albumMaxStr := r.URL.Query().Get("albumMax")
 
-	// If sorting parameters exist, sort the artists array
-	if sortBy != "" && order != "" {
-		sortArtists(sortBy, order)
+	// Parse checkboxes (can be multiple)
+	membersCountArr := r.URL.Query()["membersCount"]
+	locationsArr := r.URL.Query()["locations"]
+
+	// Convert creationMin, creationMax to int with safe defaults
+	creationMin := 0
+	creationMax := 99999
+	if val, err := strconv.Atoi(creationMinStr); err == nil {
+		creationMin = val
+	}
+	if val, err := strconv.Atoi(creationMaxStr); err == nil {
+		creationMax = val
 	}
 
-	// Detect if it's an AJAX request by checking the "X-Requested-With" header
+	// Convert albumMin, albumMax to int with safe defaults
+	albumMin := 0
+	albumMax := 99999
+	if val, err := strconv.Atoi(albumMinStr); err == nil {
+		albumMin = val
+	}
+	if val, err := strconv.Atoi(albumMaxStr); err == nil {
+		albumMax = val
+	}
+
+	// Build sets/maps for quick membership checks
+	// for number of members and locations
+	membersSet := make(map[int]bool)
+	for _, m := range membersCountArr {
+		if num, err := strconv.Atoi(m); err == nil {
+			membersSet[num] = true
+		}
+	}
+
+	locationsSet := make(map[string]bool)
+	for _, loc := range locationsArr {
+		locationsSet[loc] = true
+	}
+
+	// Now filter
+	var filtered []Artist
+	for _, a := range original {
+		// 1) Check creationDate range
+		if a.CreationDate < creationMin || a.CreationDate > creationMax {
+			continue
+		}
+
+		// 2) Check firstAlbum year range
+		// We'll parse the first 4 digits of a.FirstAlbum
+		var albumYear int
+		fmt.Sscanf(a.FirstAlbum, "%4d", &albumYear) // read up to 4 digits
+		if albumYear < albumMin || albumYear > albumMax {
+			continue
+		}
+
+		// 3) Check number of members (if any checkboxes were selected)
+		if len(membersSet) > 0 {
+			memCount := len(a.Members)
+			if !membersSet[memCount] {
+				// If the user's checkboxes did not include this number, skip
+				continue
+			}
+		}
+
+		// 4) Check locations (if any checkboxes were selected)
+		if len(locationsSet) > 0 {
+			// We require the artist to have at least one matching city
+			// in a.Relations.DatesLocations
+			hasMatch := false
+			for city := range a.Relations.DatesLocations {
+				if locationsSet[city] {
+					hasMatch = true
+					break
+				}
+			}
+			if !hasMatch {
+				continue
+			}
+		}
+
+		// If we reach here, artist passes all filters
+		filtered = append(filtered, a)
+	}
+
+	return filtered
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	// 1) Filter the global artists based on the query
+	filtered := filterArtists(artists, r)
+
+	// 2) Sort if requested
+	sortBy := r.URL.Query().Get("sortBy")
+	order := r.URL.Query().Get("order")
+	if sortBy != "" && order != "" {
+		// Temporarily replace the global slice with `filtered`
+		// so our existing `sortArtists` modifies only the filtered set
+		oldArtists := artists
+		artists = filtered
+		sortArtists(sortBy, order)
+		// after sorting, put them back into `filtered`
+		filtered = artists
+		artists = oldArtists
+	}
+
+	// 3) If AJAX request, return only partial
 	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
 		tmpl, err := template.New("artists").Parse(`
 			<div class="artists">
@@ -140,19 +245,17 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error loading partial template", http.StatusInternalServerError)
 			return
 		}
-		tmpl.Execute(w, artists)
+		tmpl.Execute(w, filtered)
 		return
 	}
 
-	// Otherwise, render the full "home.html" template
+	// 4) Otherwise, render the full page
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
 		http.Error(w, "Error loading template", http.StatusInternalServerError)
 		return
 	}
-
-	// Execute the full page template (this includes the search form, sort menu, etc.)
-	tmpl.Execute(w, artists)
+	tmpl.Execute(w, filtered)
 }
 
 func artistHandler(w http.ResponseWriter, r *http.Request) {
