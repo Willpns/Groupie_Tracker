@@ -113,25 +113,46 @@ func sortArtists(sortBy, order string) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+	// Grab sort parameters from the URL (e.g., /home?sortBy=name&order=asc)
 	sortBy := r.URL.Query().Get("sortBy")
 	order := r.URL.Query().Get("order")
 
+	// If sorting parameters exist, sort the artists array
 	if sortBy != "" && order != "" {
 		sortArtists(sortBy, order)
 	}
 
-	tmpl, err := template.ParseFiles("templates/home.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		log.Printf("Error loading home.html: %v", err)
+	// Detect if it's an AJAX request by checking the "X-Requested-With" header
+	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
+		tmpl, err := template.New("artists").Parse(`
+			<div class="artists">
+			{{ range . }}
+				<div class="artist">
+					<img src="{{ .Image }}" alt="{{ .Name }}">
+					<h2>{{ .Name }}</h2>
+					<p>Founded: {{ .CreationDate }}</p>
+					<a href="/artist?id={{ .ID }}">View Details</a>
+				</div>
+			{{ end }}
+			</div>
+		`)
+		if err != nil {
+			http.Error(w, "Error loading partial template", http.StatusInternalServerError)
+			return
+		}
+		tmpl.Execute(w, artists)
 		return
 	}
 
-	err = tmpl.Execute(w, artists)
+	// Otherwise, render the full "home.html" template
+	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
-		http.Error(w, "Error rendering template", http.StatusInternalServerError)
-		log.Printf("Error rendering home.html: %v", err)
+		http.Error(w, "Error loading template", http.StatusInternalServerError)
+		return
 	}
+
+	// Execute the full page template (this includes the search form, sort menu, etc.)
+	tmpl.Execute(w, artists)
 }
 
 func artistHandler(w http.ResponseWriter, r *http.Request) {
