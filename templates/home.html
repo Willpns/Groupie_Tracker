@@ -25,8 +25,11 @@
         </div>
     </div>
 
-    <!-- NEW: Filter form -->
-    <form id="filter-form">
+    <!-- NEW: Button to toggle filter form visibility -->
+    <button id="toggle-filter-button" class="filter-button">Show Filters</button>
+
+    <!-- Filter form (Initially hidden) -->
+    <form id="filter-form" style="display: none;">
         <h2>Filters</h2>
 
         <!-- Range filter for artist CreationDate -->
@@ -84,6 +87,20 @@
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.sort-container')) {
                 document.querySelector('.sort-menu').classList.remove('visible');
+            }
+        });
+
+        // Toggle filter form visibility
+        document.querySelector('#toggle-filter-button').addEventListener('click', function() {
+            const filterForm = document.querySelector('#filter-form');
+            const isVisible = filterForm.style.display === 'block';
+
+            if (isVisible) {
+                filterForm.style.display = 'none';
+                this.textContent = 'Show Filters';
+            } else {
+                filterForm.style.display = 'block';
+                this.textContent = 'Hide Filters';
             }
         });
     </script>

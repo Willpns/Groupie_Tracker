@@ -280,6 +280,22 @@ p {
     display: block;
 }
 
+.filter-button {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.8);
+    display: block;
+    margin: 20px auto;
+}
+
+.filter-button:hover {
+    background-color: #333;
+}
+
 /* Style global pour le formulaire */
 #filter-form {
     background-color: #000000; /* Fond doux */
