@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Search Results</title>
+</head>
+<body>
+    <div class="search-title-container">
+        <h1>Search Results</h1>
+    </div>
+
+    <div class="artists">
+        {{ range . }}
+        <div class="artist">
+            <img src="{{ .Image }}" alt="{{ .Name }}">
+            <h2>{{ .Name }}</h2>
+            <p>Founded: {{ .CreationDate }}</p>
+            <a href="/artist?id={{ .ID }}">View Details</a>
+        </div>
+        {{ else }}
+        <p>No results found.</p>
+        {{ end }}
+    </div>
+
+    <a href="/home" class="back-to-home">Back to Home</a>
+</body>
+</html>

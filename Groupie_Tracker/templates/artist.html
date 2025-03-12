@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Name }}</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="/static/artist.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>{{ .Name }}</h1>
+        <img src="{{ .Image }}" alt="{{ .Name }}">
+        <p><strong>Founded:</strong> {{ .CreationDate }}</p>
+        <p><strong>First Album:</strong> {{ .FirstAlbum }}</p>
+
+        <h2>Members</h2>
+        <ul class="members-list">
+            {{ range .Members }}
+                <li>{{ . }}</li>
+            {{ end }}
+        </ul>
+
+        <h2>Tour Locations & Dates</h2>
+        <div class="tour-container">
+            {{ range $location, $dates := .Relations.DatesLocations }}
+                <div class="tour-card">
+                    <strong>{{ $location }}</strong>
+                    <ul>
+                        {{ range $dates }}
+                            <li>{{ . }}</li>
+                        {{ end }}
+                    </ul>
+                </div>
+            {{ end }}
+        </div>
+
+        <h2>Concert Map</h2>
+        <div id="map" style="height: 400px; width: 100%;"></div>
+
+        <script id="locations-data" type="application/json">
+            [
+                {{- $first := true }}
+                {{- range $location, $dates := .Relations.DatesLocations }}
+                    {{- if not $first }},{{ end }}
+                    {{- $first = false }}
+                    {
+                        "city": "{{ $location }}",
+                        "dates": "{{ range $dates }}{{ . }}<br>{{ end }}"
+                    }
+                {{- end }}
+            ]
+        </script>
+
+        <script src="/static/map.js"></script>
+    </div>
+    <a href="/home" class="back-to-home">Back to Home</a>
+</body>
+</html>

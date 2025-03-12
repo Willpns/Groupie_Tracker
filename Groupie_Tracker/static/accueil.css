@@ -1,0 +1,91 @@
+body {
+    background-image:url("fond5.jpg"); 
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-family: 'Dancing Script', cursive;
+    color: #ffffff;
+    text-align: center;
+    font-size: 10rem;
+    margin-top: 50px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+.home-button {
+    display: inline-block;
+    text-align: center;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1.5rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    position: absolute; 
+    bottom: 50px;
+    left: 50%; 
+    transform: translateX(-50%); 
+}
+
+.home-button:hover {
+    background-color: #666;
+    transform: scale(1.05) translateX(-50%); 
+}
+
+.carousel-container {
+    width: 90%;
+    max-width: 1200px;
+    overflow: hidden;
+    margin: 50px auto;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.carousel {
+    display: flex;
+    transition: transform 0s linear;
+}
+
+.carousel img {
+    max-width: 200px;
+    height: auto;
+    margin: 0 15px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 3px solid #fff;
+    transition: transform 0.3s ease;
+}
+
+.carousel img:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .carousel-container {
+        width: 95%;
+    }
+
+    .carousel img {
+        max-width: 150px;
+    }
+
+    h1 {
+        font-size: 3rem;
+    }
+
+    .home-button {
+        font-size: 1.2rem;
+        padding: 12px 24px;
+    }
+}

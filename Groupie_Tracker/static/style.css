@@ -1,0 +1,389 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-image:url("fond5.jpg"); 
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #fff;
+}
+
+h1 {
+    font-family: 'Dancing Script', cursive;
+    color: #f8f8f8;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 3em; 
+}
+
+
+.artists {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.artist {
+    background-image:url("fond5.jpg"); 
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    border-radius: 8px;
+    padding: 15px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.5);
+}
+
+.artist img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.artist h2 {
+    font-size: 1.5em;
+    color: #f9f9f9;
+    margin: 10px 0;
+}
+
+.artist p {
+    font-size: 0.9em;
+    color: #bbb;
+    margin: 5px 0;
+}
+
+.artist a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.artist a:hover {
+    background-color: #666;
+}
+
+form {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.search-bar {
+    width: 60%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    color: #fff;
+}
+
+.search-bar::placeholder {
+    color: #aaa;
+}
+
+.search-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.search-button:hover {
+    background-color: #666;
+}
+
+img {
+    max-width: 100%;
+    border-radius: 5px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin: 10px 0;
+}
+
+p {
+    text-align: center;
+    color: #aaa;
+    margin: 20px 0;
+    font-size: 1.2em;
+}
+
+.artist-detail img {
+    max-width: 400px;
+    margin: 0 auto;
+    display: block;
+    border-radius: 8px;
+}
+
+.artist-detail h2 {
+    text-align: center;
+    margin: 20px 0;
+    color: #f9f9f9;
+}
+
+.artist-detail ul {
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+}
+
+.artist-detail ul li {
+    margin: 10px 0;
+    color: #bbb;
+}
+
+.search-results {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.search-results h1 {
+    color: #f9f9f9;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+.search-results ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.search-results li {
+    margin: 15px 0;
+    font-size: 1.2em;
+}
+
+.search-results a {
+    color: #222;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #444;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.search-results a:hover {
+    background-color: #222;
+    color: #fff;
+    text-decoration: none;
+}
+
+.back-to-home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+}
+
+.back-to-home {
+    padding: 10px 20px;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    text-align: center;
+    display: inline-block;
+}
+
+.back-to-home:hover {
+    background-color: #666;
+}
+
+
+@media (max-width: 768px) {
+    .search-results {
+        width: 90%;
+    }
+
+    .search-results h1 {
+        font-size: 1.5em;
+    }
+
+    .search-results li {
+        font-size: 1em;
+    }
+}
+
+.sort-container {
+    position: relative;
+    display: inline-block;
+}
+
+.sort-button {
+    font-size: 16px;
+    color: #fff;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.sort-menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 40px;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    width: 180px;
+    margin-left: 10px;
+}
+
+.sort-menu a {
+    display: block;
+    padding: 10px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.sort-menu a:hover {
+    background-color: #666;
+}
+
+.sort-menu.visible {
+    display: block;
+}
+
+.filter-button {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.8);
+    display: block;
+    margin: 20px auto;
+}
+
+.filter-button:hover {
+    background-color: #333;
+}
+
+/* Style global pour le formulaire */
+#filter-form {
+    background-color: #000000; /* Fond doux */
+    border-radius: 8px; /* Coins arrondis */
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.8); /* Ombre subtile */
+    max-width: 500px;
+    margin: 20px auto;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Titre du formulaire */
+#filter-form h2 {
+    text-align: center;
+    color: #ffffff; /* Texte foncé */
+    font-size: 1.6em;
+    margin-bottom: 20px;
+}
+
+/* Labels */
+#filter-form label {
+    font-weight: bold;
+    color: #ffffff; /* Texte gris foncé */
+    margin-bottom: 5px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* Champs de saisie */
+#filter-form input[type="number"],
+#filter-form input[type="checkbox"] {
+    width: 100%;
+    padding: 10px 1px;
+    margin-bottom: 15px;
+    border-radius: 4px; /* Coins arrondis */
+    border: 1px solid #bdc3c7; /* Bordure grise claire */
+    font-size: 1em;
+    color: #333;
+    background-color: #ffffff; /* Fond blanc */
+    transition: all 0.3s ease;
+}
+
+/* Effet de focus */
+#filter-form input[type="number"]:focus,
+#filter-form input[type="checkbox"]:focus {
+    outline: none;
+}
+
+/* Espacement entre les éléments de checkbox */
+#filter-form input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+/* Bouton "Apply Filters" */
+#filter-form button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #000000; /* Fond noir */
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8); /* Ombre légère */
+    border-radius: 4px; /* Coins arrondis */
+    text-decoration: none;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Effet de survol sur le bouton */
+#filter-form button:hover {
+    background-color: #333333; /* Fond gris foncé au survol */
+    box-shadow: 2px 2px 8px rgba(255, 255, 255, 0.8); /* Ombre plus marquée */
+}
+
+/* Espacement entre les options de checkbox */
+#filter-form input[type="checkbox"]:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+/* Espacement entre le titre et le bouton */
+#filter-form button:last-child {
+    margin-top: 20px;
+}
+

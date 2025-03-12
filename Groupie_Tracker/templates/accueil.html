@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Groupie Tracker</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap">
+    <link rel="stylesheet" href="/static/accueil.css">
+</head>
+<body>
+
+    <h1>Groupie Tracker</h1>
+
+    <div class="carousel-container">
+        <div class="carousel">
+            {{range .}}
+            <img src="{{.Image}}" alt="{{.Name}}">
+            {{end}}
+        </div>
+    </div>
+
+    <a href="/home" class="home-button">Go to Home</a>
+
+    <script>
+        window.onload = function() {
+            const carousel = document.querySelector('.carousel');
+            const images = carousel.querySelectorAll('img');
+            
+            images.forEach(image => {
+                const clone = image.cloneNode(true);
+                carousel.appendChild(clone);
+            });
+
+            let offset = 0;
+            const speed = 1;
+            const width = carousel.scrollWidth / 2; 
+
+            function animateCarousel() {
+                offset += speed;
+                
+                if (offset >= width) {
+                    offset = 0;
+                }
+
+                carousel.style.transform = `translateX(-${offset}px)`;
+            }
+
+            setInterval(animateCarousel, 10);
+        }
+    </script>
+
+</body>
+</html>

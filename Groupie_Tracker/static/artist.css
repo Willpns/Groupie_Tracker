@@ -1,0 +1,132 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image:url("fond5.jpg"); 
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #f9f9f9; 
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3.5em; 
+    color: #f9f9f9; 
+    margin-bottom: 10px;
+}
+
+
+img {
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 20px 0;
+}
+
+
+p {
+    font-size: 1.2em;
+    margin: 5px 0;
+    color: #bbb;
+}
+
+
+h2 {
+    font-size: 2em;
+    margin-top: 20px;
+    color: #f9f9f9;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.members-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tour-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 15px;
+    max-width: 80%;
+    margin: auto;
+}
+
+.tour-card {
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    flex: 1 1 250px;
+    min-width: 250px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+
+.tour-card ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tour-card li {
+    font-size: 1em;
+    padding: 5px 0;
+    color: #bbb;
+}
+
+#map {
+    height: 400px;
+    width: 80%;
+    max-width: 800px; 
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: block;
+}
+
+.leaflet-container {
+    max-width: 900px !important;
+    margin: 0 auto;
+}
+
+.back-to-home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+}
+
+.back-to-home {
+    padding: 10px 20px;
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    text-align: center;
+    display: inline-block;
+}
+
+.back-to-home:hover {
+    background-color: #666;
+}
