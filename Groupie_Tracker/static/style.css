@@ -301,88 +301,79 @@ p {
     background-color: #333;
 }
 
-/* Style global pour le formulaire */
 #filter-form {
-    background-color: #000000; /* Fond doux */
-    border-radius: 8px; /* Coins arrondis */
+    background-color: #000000;
+    border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.8); /* Ombre subtile */
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.8);
     max-width: 500px;
     margin: 20px auto;
     font-family: 'Arial', sans-serif;
 }
 
-/* Titre du formulaire */
 #filter-form h2 {
     text-align: center;
-    color: #ffffff; /* Texte foncé */
+    color: #ffffff;
     font-size: 1.6em;
     margin-bottom: 20px;
 }
 
-/* Labels */
 #filter-form label {
     font-weight: bold;
-    color: #ffffff; /* Texte gris foncé */
+    color: #ffffff; 
     margin-bottom: 5px;
     display: inline-block;
     margin-top: 10px;
 }
 
-/* Champs de saisie */
 #filter-form input[type="number"],
 #filter-form input[type="checkbox"] {
     width: 100%;
     padding: 10px 1px;
     margin-bottom: 15px;
-    border-radius: 4px; /* Coins arrondis */
-    border: 1px solid #bdc3c7; /* Bordure grise claire */
+    border-radius: 4px;
+    border: 1px solid #bdc3c7;
     font-size: 1em;
     color: #333;
-    background-color: #ffffff; /* Fond blanc */
+    background-color: #ffffff; 
     transition: all 0.3s ease;
 }
 
-/* Effet de focus */
 #filter-form input[type="number"]:focus,
 #filter-form input[type="checkbox"]:focus {
     outline: none;
 }
 
-/* Espacement entre les éléments de checkbox */
 #filter-form input[type="checkbox"] {
     width: auto;
     margin-right: 10px;
     display: inline-block;
 }
 
-/* Bouton "Apply Filters" */
 #filter-form button {
     display: inline-block;
     margin-top: 10px;
     padding: 10px 20px;
     color: #fff;
-    background-color: #000000; /* Fond noir */
-    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8); /* Ombre légère */
-    border-radius: 4px; /* Coins arrondis */
+    background-color: #000000;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
     text-decoration: none;
     font-size: 0.9em;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-/* Effet de survol sur le bouton */
+
 #filter-form button:hover {
-    background-color: #333333; /* Fond gris foncé au survol */
-    box-shadow: 2px 2px 8px rgba(255, 255, 255, 0.8); /* Ombre plus marquée */
+    background-color: #333333;
+    box-shadow: 2px 2px 8px rgba(255, 255, 255, 0.8);
 }
 
-/* Espacement entre les options de checkbox */
 #filter-form input[type="checkbox"]:not(:last-child) {
     margin-bottom: 5px;
 }
 
-/* Espacement entre le titre et le bouton */
 #filter-form button:last-child {
     margin-top: 20px;
 }
