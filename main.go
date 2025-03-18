@@ -171,9 +171,21 @@ func filterArtists(original []Artist, r *http.Request) []Artist {
 
 		// 2) Check firstAlbum year range
 		// We'll parse the first 4 digits of a.FirstAlbum
-		var albumYear int
-		fmt.Sscanf(a.FirstAlbum, "%4d", &albumYear) // read up to 4 digits
-		if albumYear < albumMin || albumYear > albumMax {
+		dateParts := strings.Split(a.FirstAlbum, "-") // e.g. "DD-MM-YYYY"
+		if len(dateParts) == 3 {
+			// Parse the last segment (the year), e.g. "1973"
+			albumYear, err := strconv.Atoi(dateParts[2])
+			if err != nil {
+				// If it's not a valid integer, skip this artist
+				continue
+			}
+
+			// Now do your range check
+			if albumYear < albumMin || albumYear > albumMax {
+				continue
+			}
+		} else {
+			// If the string doesn't look like "DD-MM-YYYY", skip
 			continue
 		}
 
